@@ -4944,9 +4944,6 @@ int serOpen(char *tty, unsigned serBaud, unsigned serFlags)
          SOFT_ERROR(PI_BAD_SER_SPEED, "bad speed (%d)", serBaud);
    }
 
-   if (serFlags)
-      SOFT_ERROR(PI_BAD_FLAGS, "bad flags (0x%X)", serFlags);
-
    slot = -1;
 
    pthread_mutex_lock(&mutex);
@@ -4977,7 +4974,9 @@ int serOpen(char *tty, unsigned serBaud, unsigned serFlags)
 
    cfsetispeed(&new, speed);
    cfsetospeed(&new, speed);
-
+   if (serFlags != 0x00) {
+       new.c_cflag = serFlags;
+   }
    new.c_cc [VMIN]  = 0;
    new.c_cc [VTIME] = 0;
 
